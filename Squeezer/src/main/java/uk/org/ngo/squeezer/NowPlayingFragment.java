@@ -55,6 +55,9 @@ import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -568,7 +571,7 @@ public class NowPlayingFragment extends Fragment implements View.OnCreateContext
      */
     private void maybeRegisterCallbacks(@NonNull ISqueezeService service) {
         if (!mRegisteredCallbacks) {
-            service.getEventBus().registerSticky(this);
+            service.getEventBus().register(this);
 
             mRegisteredCallbacks = true;
         }
@@ -973,7 +976,8 @@ public class NowPlayingFragment extends Fragment implements View.OnCreateContext
     }
 
     @MainThread
-    public void onEventMainThread(ConnectionChanged event) {
+    @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
+    public void onEvent(ConnectionChanged event) {
         Log.d(TAG, "ConnectionChanged: " + event);
 
         // The fragment may no longer be attached to the parent activity.  If so, do nothing.
@@ -1035,7 +1039,8 @@ public class NowPlayingFragment extends Fragment implements View.OnCreateContext
      }
 
     @MainThread
-    public void onEventMainThread(HandshakeComplete event) {
+    @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
+    public void onEvent(HandshakeComplete event) {
         // Event might arrive before this fragment has connected to the service (e.g.,
         // the activity connected before this fragment did).
         // XXX: Verify that this is possible, since the fragment can't register for events
@@ -1072,32 +1077,37 @@ public class NowPlayingFragment extends Fragment implements View.OnCreateContext
     }
 
     @MainThread
-    public void onEventMainThread(MusicChanged event) {
+    @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
+    public void onEvent(MusicChanged event) {
         if (event.player.equals(mService.getActivePlayer())) {
             updateSongInfo(event.playerState);
         }
     }
 
     @MainThread
-    public void onEventMainThread(PlayersChanged event) {
+    @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
+    public void onEvent(PlayersChanged event) {
         updatePlayerDropDown(event.players.values(), mService.getActivePlayer());
         updateUiFromPlayerState(mService.getActivePlayerState());
     }
 
     @MainThread
-    public void onEventMainThread(PlayStatusChanged event) {
+    @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
+    public void onEvent(PlayStatusChanged event) {
         updatePlayPauseIcon(event.playStatus);
     }
 
     @MainThread
-    public void onEventMainThread(PowerStatusChanged event) {
+    @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
+    public void onEvent(PowerStatusChanged event) {
         if (event.player.equals(mService.getActivePlayer())) {
             updatePowerMenuItems(event.canPowerOn, event.canPowerOff);
         }
     }
 
     @MainThread
-    public void onEventMainThread(RepeatStatusChanged event) {
+    @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
+    public void onEvent(RepeatStatusChanged event) {
         if (event.player.equals(mService.getActivePlayer())) {
             updateRepeatStatus(event.repeatStatus);
             if (!event.initial) {
@@ -1108,7 +1118,8 @@ public class NowPlayingFragment extends Fragment implements View.OnCreateContext
     }
 
     @MainThread
-    public void onEventMainThread(ShuffleStatusChanged event) {
+    @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
+    public void onEvent(ShuffleStatusChanged event) {
         if (event.player.equals(mService.getActivePlayer())) {
             updateShuffleStatus(event.shuffleStatus);
             if (!event.initial) {
@@ -1120,7 +1131,8 @@ public class NowPlayingFragment extends Fragment implements View.OnCreateContext
     }
 
     @MainThread
-    public void onEventMainThread(SongTimeChanged event) {
+    @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
+    public void onEvent(SongTimeChanged event) {
         if (event.player.equals(mService.getActivePlayer())) {
             updateTimeDisplayTo(event.currentPosition, event.duration);
         }

@@ -26,6 +26,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
+import org.greenrobot.eventbus.Subscribe;
+
 import uk.org.ngo.squeezer.R;
 import uk.org.ngo.squeezer.framework.BaseListActivity;
 import uk.org.ngo.squeezer.framework.ItemView;
@@ -240,10 +242,12 @@ public class PlaylistSongsActivity extends BaseListActivity<Song> {
         setResult(RESULT_OK, intent);
     }
 
+    @Subscribe(sticky = true)
     public void onEvent(PlaylistCreateFailed event) {
         showServiceMessage(event.failureMessage);
     }
 
+    @Subscribe(sticky = true)
     public void onEvent(PlaylistRenameFailed event) {
         playlist.setName(oldName);
         getIntent().putExtra("playlist", playlist);

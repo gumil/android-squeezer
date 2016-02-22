@@ -4,6 +4,8 @@ package uk.org.ngo.squeezer.test.server;
 import android.content.Intent;
 import android.test.ServiceTestCase;
 
+import org.greenrobot.eventbus.Subscribe;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -201,6 +203,7 @@ public class SqueezeServiceTest extends ServiceTestCase<SqueezeService> {
                 ConnectionState.LOGIN_FAILED), mActualConnectionStates);
     }
 
+    @Subscribe(priority = 1)
     public void onEvent(ConnectionChanged event) {
         mActualConnectionStates.add(event.connectionState);
 
@@ -217,6 +220,7 @@ public class SqueezeServiceTest extends ServiceTestCase<SqueezeService> {
         }
     }
 
+    @Subscribe(priority = 1)
     public void onEvent(HandshakeComplete event) {
         mLastHandshakeCompleteEvent = event;
         synchronized (mLockHandshakeComplete) {

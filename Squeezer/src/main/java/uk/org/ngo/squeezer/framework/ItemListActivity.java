@@ -26,6 +26,8 @@ import android.view.View;
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
 
+import org.greenrobot.eventbus.Subscribe;
+
 import java.util.HashSet;
 import java.util.Set;
 import java.util.Stack;
@@ -157,6 +159,7 @@ public abstract class ItemListActivity extends BaseActivity {
     /**
      * Orders any pages requested before the handshake completed.
      */
+    @Subscribe(sticky = true)
     public void onEvent(HandshakeComplete event) {
         // Order any pages that were requested before the handshake complete.
         while (!mOrderedPagesBeforeHandshake.empty()) {

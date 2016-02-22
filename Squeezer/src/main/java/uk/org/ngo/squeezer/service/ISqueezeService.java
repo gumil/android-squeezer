@@ -21,7 +21,7 @@ import android.support.annotation.Nullable;
 
 import java.util.List;
 
-import de.greenrobot.event.EventBus;
+import org.greenrobot.eventbus.EventBus;
 import uk.org.ngo.squeezer.framework.FilterItem;
 import uk.org.ngo.squeezer.framework.PlaylistItem;
 import uk.org.ngo.squeezer.itemlist.IServiceItemListCallback;

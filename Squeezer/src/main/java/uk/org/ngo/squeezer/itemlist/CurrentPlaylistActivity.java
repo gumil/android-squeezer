@@ -27,6 +27,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
 import java.util.List;
 import java.util.Map;
 
@@ -243,12 +246,14 @@ public class CurrentPlaylistActivity extends BaseListActivity<Song> {
     }
 
     @Override
+    @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
     public void onEvent(HandshakeComplete event) {
         super.onEvent(event);
         player = getService().getActivePlayer();
     }
 
-    public void onEventMainThread(MusicChanged event) {
+    @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
+    public void onEvent(MusicChanged event) {
         if (event.player.equals(getService().getActivePlayer())) {
             Log.d(getTag(), "onMusicChanged " + event.playerState.getCurrentSong());
             currentPlaylistIndex = event.playerState.getCurrentPlaylistIndex();
@@ -256,7 +261,8 @@ public class CurrentPlaylistActivity extends BaseListActivity<Song> {
         }
     }
 
-    public void onEventMainThread(PlayersChanged event) {
+    @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
+    public void onEvent(PlayersChanged event) {
         supportInvalidateOptionsMenu();
 
         Player activePlayer = getService().getActivePlayer();
@@ -273,12 +279,14 @@ public class CurrentPlaylistActivity extends BaseListActivity<Song> {
         }
     }
 
-    public void onEventMainThread(PlaylistTracksAdded event) {
+    @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
+    public void onEvent(PlaylistTracksAdded event) {
         clearAndReOrderItems();
         getItemAdapter().notifyDataSetChanged();
     }
 
-    public void onEventMainThread(PlaylistTracksDeleted event) {
+    @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
+    public void onEvent(PlaylistTracksDeleted event) {
         // TODO: Investigate feasibility of deleting single items from the adapter.
         clearAndReOrderItems();
         getItemAdapter().notifyDataSetChanged();

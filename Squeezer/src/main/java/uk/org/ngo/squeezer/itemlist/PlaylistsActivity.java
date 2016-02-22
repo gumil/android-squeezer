@@ -25,6 +25,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import org.greenrobot.eventbus.Subscribe;
+
 import uk.org.ngo.squeezer.R;
 import uk.org.ngo.squeezer.framework.BaseListActivity;
 import uk.org.ngo.squeezer.framework.ItemView;
@@ -165,10 +167,12 @@ public class PlaylistsActivity extends BaseListActivity<Playlist> {
         });
     }
 
+    @Subscribe(sticky = true)
     public void onEvent(PlaylistCreateFailed event) {
         showServiceMessage(event.failureMessage);
     }
 
+    @Subscribe(sticky = true)
     public void onEvent(PlaylistRenameFailed event) {
         if (currentIndex != -1) {
             currentPlaylist.setName(oldName);

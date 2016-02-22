@@ -25,6 +25,9 @@ import android.view.View;
 import android.widget.AbsListView;
 import android.widget.ExpandableListView;
 
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
 import java.util.List;
 import java.util.Map;
 
@@ -92,7 +95,8 @@ public class SearchActivity extends ItemListActivity {
      * the server.  Only do this after the handshake has completed.  When done, perform the
      * search.
      */
-    public void onEventMainThread(HandshakeComplete event) {
+    @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
+    public void onEvent(HandshakeComplete event) {
         resultsExpandableListView.setAdapter(searchResultsAdapter);
         doSearch();
     }
@@ -122,7 +126,7 @@ public class SearchActivity extends ItemListActivity {
 
     /**
      * Saves the search query, and attempts to query the service for <code>searchString</code>. If
-     * the service binding has not completed yet then {@link #onEventMainThread(HandshakeComplete)}
+     * the service binding has not completed yet then {@link #onEvent(HandshakeComplete)}
      * will re-query for the saved search query.
      *
      * @param searchString The string to search fo.

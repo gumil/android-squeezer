@@ -31,6 +31,9 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
@@ -123,7 +126,8 @@ public abstract class BaseListActivity<T extends Item> extends ItemListActivity 
         mListView.setOnCreateContextMenuListener(getItemAdapter());
     }
 
-    public void onEventMainThread(HandshakeComplete event) {
+    @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
+    public void onEvent(HandshakeComplete event) {
         maybeOrderVisiblePages(mListView);
         setAdapter();
     }

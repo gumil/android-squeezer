@@ -45,6 +45,8 @@ import android.widget.RemoteViews;
 
 import com.crashlytics.android.Crashlytics;
 
+import org.greenrobot.eventbus.Subscribe;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -217,7 +219,7 @@ public class SqueezeService extends Service implements ServiceCallbackList.Servi
         setWifiLock(((WifiManager) getSystemService(Context.WIFI_SERVICE)).createWifiLock(
                 WifiManager.WIFI_MODE_FULL, "Squeezer_WifiLock"));
 
-        mEventBus.register(this, 1);  // Get events before other subscribers
+        mEventBus.register(this);
         cli.initialize();
     }
 
@@ -327,6 +329,7 @@ public class SqueezeService extends Service implements ServiceCallbackList.Servi
      * player didn't have a sleep duration set, and now does).
      * @param event
      */
+    @Subscribe(priority = 1)
     public void onEvent(PlayerStateChanged event) {
         updatePlayerSubscription(event.player, calculateSubscriptionTypeFor(event.player));
     }
@@ -336,6 +339,7 @@ public class SqueezeService extends Service implements ServiceCallbackList.Servi
      * <p>
      * Updates the Wi-Fi lock and ongoing status notification as necessary.
      */
+    @Subscribe(priority = 1)
     public void onEvent(PlayStatusChanged event) {
         if (event.player.equals(mActivePlayer.get())) {
             updateWifiLock(event.player.getPlayerState().isPlaying());
@@ -664,6 +668,7 @@ public class SqueezeService extends Service implements ServiceCallbackList.Servi
         mNotifiedPlayerState = null;
     }
 
+    @Subscribe(priority = 1)
     public void onEvent(ConnectionChanged event) {
         if (event.connectionState == ConnectionState.DISCONNECTED) {
             mPlayers.clear();
@@ -674,17 +679,20 @@ public class SqueezeService extends Service implements ServiceCallbackList.Servi
         }
     }
 
+    @Subscribe(priority = 1)
     public void onEvent(HandshakeComplete event) {
         mHandshakeComplete = true;
         strings();
     }
 
+    @Subscribe(priority = 1)
     public void onEvent(MusicChanged event) {
         if (event.player.equals(mActivePlayer.get())) {
             updateOngoingNotification();
         }
     }
 
+    @Subscribe(priority = 1)
     public void onEvent(PlayersChanged event) {
         mPlayers.clear();
         mPlayers.putAll(event.players);
@@ -1677,17 +1685,11 @@ public class SqueezeService extends Service implements ServiceCallbackList.Servi
      * For example, this ensures that if a new client subscribes and needs real
      * time updates, the player subscription states will be updated accordingly.
      */
-    class EventBus extends de.greenrobot.event.EventBus {
+    class EventBus extends org.greenrobot.eventbus.EventBus {
 
         @Override
         public void register(Object subscriber) {
             super.register(subscriber);
-            updateAllPlayerSubscriptionStates();
-        }
-
-        @Override
-        public void register(Object subscriber, int priority) {
-            super.register(subscriber, priority);
             updateAllPlayerSubscriptionStates();
         }
 
@@ -1701,18 +1703,6 @@ public class SqueezeService extends Service implements ServiceCallbackList.Servi
         public void postSticky(Object event) {
             Log.v("EventBus", "postSticky() " + event.getClass().getSimpleName() + ": " + event);
             super.postSticky(event);
-        }
-
-        @Override
-        public void registerSticky(Object subscriber) {
-            super.registerSticky(subscriber);
-            updateAllPlayerSubscriptionStates();
-        }
-
-        @Override
-        public void registerSticky(Object subscriber, int priority) {
-            super.registerSticky(subscriber, priority);
-            updateAllPlayerSubscriptionStates();
         }
 
         @Override

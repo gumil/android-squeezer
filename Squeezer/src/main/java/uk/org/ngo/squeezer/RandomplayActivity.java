@@ -29,6 +29,9 @@ import android.widget.ListView;
 
 import com.google.common.collect.ImmutableList;
 
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.Arrays;
@@ -60,7 +63,8 @@ public class RandomplayActivity extends BaseActivity {
         listView = (ListView) findViewById(R.id.item_list);
     }
 
-    public void onEventMainThread(HandshakeComplete event) {
+    @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
+    public void onEvent(HandshakeComplete event) {
         setRandomPlayList(getService());
     }
 

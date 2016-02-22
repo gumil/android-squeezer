@@ -41,6 +41,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import org.greenrobot.eventbus.Subscribe;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
@@ -269,7 +271,7 @@ public abstract class BaseActivity extends ActionBarActivity implements HasUiThr
      */
     private void maybeRegisterOnEventBus(@NonNull ISqueezeService service) {
         if (!mRegisteredOnEventBus) {
-            service.getEventBus().registerSticky(this);
+            service.getEventBus().register(this);
             mRegisteredOnEventBus = true;
         }
     }
@@ -386,6 +388,7 @@ public abstract class BaseActivity extends ActionBarActivity implements HasUiThr
         return true;
     }
 
+    @Subscribe(sticky = true)
     public void onEvent(PlayerVolume event) {
         if (!mIgnoreVolumeChange && mVolumePanel != null && event.player == mService.getActivePlayer()) {
             mVolumePanel.postVolumeChanged(event.volume, event.player.getName());

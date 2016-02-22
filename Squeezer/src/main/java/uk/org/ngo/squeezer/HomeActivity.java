@@ -35,6 +35,9 @@ import com.google.android.apps.analytics.GoogleAnalyticsTracker;
 
 import com.crashlytics.android.Crashlytics;
 
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -130,7 +133,8 @@ public class HomeActivity extends BaseActivity {
         }
     }
 
-    public void onEventMainThread(HandshakeComplete event) {
+    @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
+    public void onEvent(HandshakeComplete event) {
         int[] icons = new int[]{
                 R.drawable.ic_artists,
                 R.drawable.ic_albums, R.drawable.ic_songs,

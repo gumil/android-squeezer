@@ -33,6 +33,9 @@ import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
 import uk.org.ngo.squeezer.Preferences;
 import uk.org.ngo.squeezer.R;
 import uk.org.ngo.squeezer.Util;
@@ -229,11 +232,12 @@ public class SongListActivity extends BaseListActivity<Song>
      * Ensures that the artwork in the UI is updated after the server handshake completes.
      */
     @Override
-    public void onEventMainThread(HandshakeComplete event) {
+    @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
+    public void onEvent(HandshakeComplete event) {
         if (!sortOrder.can(event.version)) {
             sortOrder = SongViewDialog.SongsSortOrder.title;
         }
-        super.onEventMainThread(event);
+        super.onEvent(event);
         updateArtwork();
     }
 
